@@ -1,0 +1,21 @@
+.stock-container {
+    text-align: center;
+  }
+  
+  .stock-table {
+    width: 80%;
+    margin: 20px auto;
+    border-collapse: collapse;
+  }
+  
+  .stock-table th, .stock-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  
+  .input-field {
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #ccc;
+  }
+  
