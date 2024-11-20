@@ -1,59 +1,84 @@
 import React, { useState, useEffect } from 'react';
-import { saveToLocalStorage, getFromLocalStorage } from '../../utils/LocalStorage';
 import './styles.css';
 
 function Stock() {
-  const [name, setName] = useState('');
-  const [quantity, setQuantity] = useState(0);
-  const [price, setPrice] = useState(0);
   const [stock, setStock] = useState([]);
+  const [itemName, setItemName] = useState('');
+  const [itemQuantity, setItemQuantity] = useState('');
+  const [itemPrice, setItemPrice] = useState('');
+  const [editingIndex, setEditingIndex] = useState(null); // Índice do item em edição
 
   useEffect(() => {
-    setStock(getFromLocalStorage('stock') || []);
+    const storedStock = JSON.parse(localStorage.getItem('stock')) || [];
+    setStock(storedStock);
   }, []);
 
   const handleAddItem = () => {
-    const newItem = { name, quantity, price };
-    const updatedStock = [...stock, newItem];
-    setStock(updatedStock);
-    saveToLocalStorage('stock', updatedStock);
+    if (itemName && itemQuantity && itemPrice) {
+      const newItem = {
+        name: itemName,
+        quantity: parseInt(itemQuantity, 10),
+        price: parseFloat(itemPrice),
+      };
+      const updatedStock = [...stock, newItem];
+      setStock(updatedStock);
+      localStorage.setItem('stock', JSON.stringify(updatedStock));
+      setItemName('');
+      setItemQuantity('');
+      setItemPrice('');
+    } else {
+      alert('Preencha todos os campos!');
+    }
   };
 
-  const handleRemoveItem = (index) => {
-    const updatedStock = stock.filter((_, i) => i !== index);
+  const handleDeleteItem = (index) => {
+    const updatedStock = stock.filter((_, idx) => idx !== index);
     setStock(updatedStock);
-    saveToLocalStorage('stock', updatedStock);
+    localStorage.setItem('stock', JSON.stringify(updatedStock));
   };
 
-  const handleEditItem = (index, updatedItem) => {
-    const updatedStock = stock.map((item, i) => (i === index ? updatedItem : item));
+  const handleEditItem = (index) => {
+    setEditingIndex(index); // Define o índice do item sendo editado
+  };
+
+  const handleSaveEdit = (index) => {
+    const updatedStock = [...stock];
+    updatedStock[index] = {
+      name: itemName || stock[index].name,
+      quantity: itemQuantity ? parseInt(itemQuantity, 10) : stock[index].quantity,
+      price: itemPrice ? parseFloat(itemPrice) : stock[index].price,
+    };
     setStock(updatedStock);
-    saveToLocalStorage('stock', updatedStock);
+    localStorage.setItem('stock', JSON.stringify(updatedStock));
+    setEditingIndex(null); // Finaliza o modo de edição
+    setItemName('');
+    setItemQuantity('');
+    setItemPrice('');
   };
 
   return (
     <div className="stock-container">
-      <h2>Estoque</h2>
-      <div className="input-container">
+      <h2>Gerenciamento de Estoque</h2>
+      <div className="add-item-container">
         <input
           type="text"
-          placeholder="Nome do item"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          placeholder="Nome do Item"
+          value={itemName}
+          onChange={(e) => setItemName(e.target.value)}
           className="input-field"
         />
         <input
           type="number"
           placeholder="Quantidade"
-          value={quantity}
-          onChange={(e) => setQuantity(e.target.value)}
+          value={itemQuantity}
+          onChange={(e) => setItemQuantity(e.target.value)}
           className="input-field"
         />
         <input
           type="number"
           placeholder="Preço"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
+          value={itemPrice}
+          onChange={(e) => setItemPrice(e.target.value)}
           className="input-field"
         />
         <button onClick={handleAddItem} className="btn">Adicionar Item</button>
@@ -71,13 +96,50 @@ function Stock() {
         <tbody>
           {stock.map((item, index) => (
             <tr key={index}>
-              <td>{item.name}</td>
-              <td>{item.quantity}</td>
-              <td>{item.price}</td>
-              <td>
-                <button onClick={() => handleRemoveItem(index)} className="btn">Remover</button>
-                <button onClick={() => handleEditItem(index, { ...item, quantity: item.quantity + 1 })} className="btn">Editar</button>
-              </td>
+              {editingIndex === index ? (
+                <>
+                  {/* Campos de edição */}
+                  <td>
+                    <input
+                      type="text"
+                      defaultValue={item.name}
+                      onChange={(e) => setItemName(e.target.value)}
+                      className="input-field"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="number"
+                      defaultValue={item.quantity}
+                      onChange={(e) => setItemQuantity(e.target.value)}
+                      className="input-field"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="number"
+                      defaultValue={item.price}
+                      onChange={(e) => setItemPrice(e.target.value)}
+                      className="input-field"
+                    />
+                  </td>
+                  <td>
+                    <button onClick={() => handleSaveEdit(index)} className="btn">Salvar</button>
+                    <button onClick={() => setEditingIndex(null)} className="btn">Cancelar</button>
+                  </td>
+                </>
+              ) : (
+                <>
+                  {/* Campos normais */}
+                  <td>{item.name}</td>
+                  <td>{item.quantity}</td>
+                  <td>R${item.price}</td>
+                  <td>
+                    <button onClick={() => handleEditItem(index)} className="btn">Editar</button>
+                    <button onClick={() => handleDeleteItem(index)} className="btn">Remover</button>
+                  </td>
+                </>
+              )}
             </tr>
           ))}
         </tbody>
