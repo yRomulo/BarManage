@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import './styles.css';
 
 function Stock() {
@@ -58,6 +59,9 @@ function Stock() {
 
   return (
     <div className="stock-container">
+      <div className="back">
+        <Link to="/Dashboard" className="btn">Voltar</Link>
+      </div>
       <h2>Gerenciamento de Estoque</h2>
       <div className="add-item-container">
         <input

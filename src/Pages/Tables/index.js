@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { saveToLocalStorage, getFromLocalStorage } from '../../utils/LocalStorage';
+import { Link } from 'react-router-dom';
 import './styles.css';
 
 function Tables() {
@@ -46,6 +47,9 @@ function Tables() {
 
   return (
     <div className="tables-container">
+      <div className="back">
+        <Link to="/Dashboard" className="btn">Voltar</Link>
+      </div>
       <h2>Gerenciar Mesas</h2>
       <div className="input-container">
         <input
