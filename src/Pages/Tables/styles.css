@@ -1,13 +1,53 @@
 .tables-container {
-    padding: 20px;
-  }
-  
-  .table {
-    margin: 20px 0;
-  }
-  
-  .input-field {
-    margin: 10px 0;
-    padding: 10px;
-  }
-  
+  padding: 20px;
+}
+
+.tables-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+
+.table-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+  height: 100px;
+  cursor: pointer;
+  font-weight: bold;
+  color: white;
+  font-size: 18px;
+}
+
+.table-icon.available {
+  background-color: #4caf50;
+}
+
+.table-icon.occupied {
+  background-color: #f44336;
+}
+
+.form-container {
+  margin-top: 20px;
+}
+
+.input-field-tables {
+  width: 200px;
+  margin: 10px 0;
+  padding: 10px;
+  margin-right: 10px;
+}
+
+.btn {
+  margin: 5px;
+  padding: 10px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background-color: #0056b3;
+}
