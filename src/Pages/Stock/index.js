@@ -62,7 +62,7 @@ function Stock() {
       <div className="back">
         <Link to="/Dashboard" className="btn">Voltar</Link>
       </div>
-      <h2>Gerenciamento de Estoque</h2>
+      <h2>Gerenciamento de Estoque aaaaa</h2>
       <div className="add-item-container">
         <input
           type="text"
