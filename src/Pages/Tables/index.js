@@ -55,7 +55,10 @@ function Tables() {
     const currentItems = updatedTables[selectedTable]?.items || [];
     updatedTables[selectedTable] = {
       ...updatedTables[selectedTable],
-      items: [...currentItems, { name: selectedItem, quantity: selectedQuantity }],
+      items: [
+        ...currentItems,
+        { name: selectedItem, quantity: selectedQuantity, price: item.price },
+      ],
     };
 
     setStock(updatedStock);
@@ -68,10 +71,45 @@ function Tables() {
 
   const handleCloseTable = () => {
     const updatedTables = [...tables];
+    const table = updatedTables[selectedTable];
+    const total = table.items.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0
+    );
+
+    alert(
+      `Mesa ${selectedTable + 1} fechada! \nItens Consumidos:\n` +
+        table.items
+          .map(
+            (item) =>
+              `- ${item.name} (${item.quantity}x) - R$${(
+                item.price * item.quantity
+              ).toFixed(2)}`
+          )
+          .join('\n') +
+        `\nTotal: R$${total.toFixed(2)}`
+    );
+
     updatedTables[selectedTable] = null;
     setTables(updatedTables);
     localStorage.setItem('tables', JSON.stringify(updatedTables));
     setSelectedTable(null);
+  };
+
+  const handleAddTable = () => {
+    const updatedTables = [...tables, null];
+    setTables(updatedTables);
+    localStorage.setItem('tables', JSON.stringify(updatedTables));
+  };
+
+  const handleRemoveTable = (index) => {
+    if (tables[index]) {
+      alert('A mesa precisa estar vazia para ser removida!');
+      return;
+    }
+    const updatedTables = tables.filter((_, idx) => idx !== index);
+    setTables(updatedTables);
+    localStorage.setItem('tables', JSON.stringify(updatedTables));
   };
 
   return (
@@ -81,24 +119,40 @@ function Tables() {
       </div>
       <h2>Gerenciamento de Mesas</h2>
       <div className="tables-grid">
-        {Array(5)
-          .fill(0)
-          .map((_, index) => (
-            <div
-              key={index}
-              className={`table-icon ${tables[index] ? 'occupied' : 'available'}`}
-              onClick={() => handleTableClick(index)}
-            >
-              Mesa {index + 1}
-            </div>
-          ))}
+        {tables.map((table, index) => (
+          <div
+            key={index}
+            className={`table-icon ${table ? 'occupied' : 'available'}`}
+            onClick={() => handleTableClick(index)}
+          >
+            Mesa {index + 1} <br />
+            {table?.responsible &&  <span> Responsável: {table.responsible}</span>}
+          </div>
+        ))}
       </div>
+      <button onClick={handleAddTable} className="btn">Adicionar Mesa</button>
+      {tables.length > 0 && (
+        <button
+          onClick={() => handleRemoveTable(tables.length - 1)}
+          className="btn"
+        >
+          Remover Última Mesa
+        </button>
+      )}
 
       {selectedTable !== null && (
         <div className="form-container">
           {tables[selectedTable] ? (
             <>
-              <h3>Adicionar Item à Mesa {selectedTable + 1}</h3>
+              <h3>Itens na Mesa {selectedTable + 1}</h3>
+              <ul>
+                {tables[selectedTable].items.map((item, idx) => (
+                  <li key={idx}>
+                    {item.name} ({item.quantity}x) - R${(item.price * item.quantity).toFixed(2)}
+                  </li>
+                ))}
+              </ul>
+              <h3>Adicionar Item à Mesa</h3>
               <select
                 value={selectedItem}
                 onChange={(e) => setSelectedItem(e.target.value)}
@@ -107,7 +161,7 @@ function Tables() {
                 <option value="">Selecione um item</option>
                 {stock.map((item, idx) => (
                   <option key={idx} value={item.name}>
-                    {item.name} (Estoque: {item.quantity})
+                    {item.name} R${item.price} (Estoque: {item.quantity}) 
                   </option>
                 ))}
               </select>
