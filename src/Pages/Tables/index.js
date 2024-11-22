@@ -1,48 +1,76 @@
 import React, { useState, useEffect } from 'react';
-import { saveToLocalStorage, getFromLocalStorage } from '../../utils/LocalStorage';
-import { Link } from 'react-router-dom';
 import './styles.css';
 
 function Tables() {
-  const [tableNumber, setTableNumber] = useState('');
-  const [itemName, setItemName] = useState('');
-  const [quantity, setQuantity] = useState(0);
   const [tables, setTables] = useState([]);
   const [stock, setStock] = useState([]);
+  const [selectedTable, setSelectedTable] = useState(null);
+  const [responsible, setResponsible] = useState('');
+  const [selectedItem, setSelectedItem] = useState('');
+  const [selectedQuantity, setSelectedQuantity] = useState('');
 
   useEffect(() => {
-    setTables(getFromLocalStorage('tables') || []);
-    setStock(getFromLocalStorage('stock') || []);
+    const storedTables = JSON.parse(localStorage.getItem('tables')) || [];
+    const storedStock = JSON.parse(localStorage.getItem('stock')) || [];
+    setTables(storedTables);
+    setStock(storedStock);
   }, []);
 
-  const handleAddTable = () => {
-    const newTable = { number: tableNumber, items: [] };
-    const updatedTables = [...tables, newTable];
-    setTables(updatedTables);
-    saveToLocalStorage('tables', updatedTables);
-  };
-
-  const handleAddItemToTable = (tableNumber) => {
-    const item = stock.find((i) => i.name === itemName);
-    if (item && item.quantity >= quantity) {
-      item.quantity -= quantity;
-      const updatedTables = tables.map((table) =>
-        table.number === tableNumber
-          ? { ...table, items: [...table.items, { name: itemName, quantity, totalPrice: item.price * quantity }] }
-          : table
-      );
-      setTables(updatedTables);
-      saveToLocalStorage('tables', updatedTables);
-      saveToLocalStorage('stock', stock);
-    } else {
-      alert('Item não disponível no estoque');
+  const handleTableClick = (index) => {
+    setSelectedTable(index);
+    if (tables[index]?.responsible) {
+      setResponsible('');
     }
   };
 
-  const handleCloseOrder = (tableNumber) => {
-    const table = tables.find((t) => t.number === tableNumber);
-    const total = table.items.reduce((acc, item) => acc + item.totalPrice, 0);
-    alert(`Valor total do pedido: R$${total.toFixed(2)}`);
+  const handleAssignTable = () => {
+    const updatedTables = [...tables];
+    updatedTables[selectedTable] = {
+      responsible: responsible || tables[selectedTable]?.responsible,
+      items: tables[selectedTable]?.items || [],
+    };
+    setTables(updatedTables);
+    localStorage.setItem('tables', JSON.stringify(updatedTables));
+    setSelectedTable(null);
+    setResponsible('');
+  };
+
+  const handleAddItemToTable = () => {
+    if (!selectedItem || !selectedQuantity) {
+      alert('Preencha os campos de item e quantidade!');
+      return;
+    }
+
+    const item = stock.find((i) => i.name === selectedItem);
+    if (!item || item.quantity < selectedQuantity) {
+      alert('Quantidade insuficiente no estoque!');
+      return;
+    }
+
+    const updatedStock = stock.map((i) =>
+      i.name === selectedItem ? { ...i, quantity: i.quantity - selectedQuantity } : i
+    );
+    const updatedTables = [...tables];
+    const currentItems = updatedTables[selectedTable]?.items || [];
+    updatedTables[selectedTable] = {
+      ...updatedTables[selectedTable],
+      items: [...currentItems, { name: selectedItem, quantity: selectedQuantity }],
+    };
+
+    setStock(updatedStock);
+    setTables(updatedTables);
+    localStorage.setItem('stock', JSON.stringify(updatedStock));
+    localStorage.setItem('tables', JSON.stringify(updatedTables));
+    setSelectedItem('');
+    setSelectedQuantity('');
+  };
+
+  const handleCloseTable = () => {
+    const updatedTables = [...tables];
+    updatedTables[selectedTable] = null;
+    setTables(updatedTables);
+    localStorage.setItem('tables', JSON.stringify(updatedTables));
+    setSelectedTable(null);
   };
 
   return (
@@ -50,48 +78,64 @@ function Tables() {
       <div className="back">
         <Link to="/Dashboard" className="btn">Voltar</Link>
       </div>
-      <h2>Gerenciar Mesas</h2>
-      <div className="input-container">
-        <input
-          type="number"
-          placeholder="Número da Mesa"
-          value={tableNumber}
-          onChange={(e) => setTableNumber(e.target.value)}
-          className="input-field"
-        />
-        <button onClick={handleAddTable} className="btn">Adicionar Mesa</button>
+      <h2>Gerenciamento de Mesas</h2>
+      <div className="tables-grid">
+        {Array(5)
+          .fill(0)
+          .map((_, index) => (
+            <div
+              key={index}
+              className={`table-icon ${tables[index] ? 'occupied' : 'available'}`}
+              onClick={() => handleTableClick(index)}
+            >
+              Mesa {index + 1}
+            </div>
+          ))}
       </div>
 
-      <div className="tables-list">
-        {tables.map((table, index) => (
-          <div key={index} className="table">
-            <h3>Mesa {table.number}</h3>
-            <button onClick={() => handleCloseOrder(table.number)} className="btn">Fechar Pedido</button>
-            <div>
-              <select onChange={(e) => setItemName(e.target.value)} className="input-field">
+      {selectedTable !== null && (
+        <div className="form-container">
+          {tables[selectedTable] ? (
+            <>
+              <h3>Adicionar Item à Mesa {selectedTable + 1}</h3>
+              <select
+                value={selectedItem}
+                onChange={(e) => setSelectedItem(e.target.value)}
+                className="input-field-tables"
+              >
+                <option value="">Selecione um item</option>
                 {stock.map((item, idx) => (
                   <option key={idx} value={item.name}>
-                    {item.name} - {item.quantity} disponíveis
+                    {item.name} (Estoque: {item.quantity})
                   </option>
                 ))}
               </select>
               <input
                 type="number"
                 placeholder="Quantidade"
-                value={quantity}
-                onChange={(e) => setQuantity(e.target.value)}
-                className="input-field"
+                value={selectedQuantity}
+                onChange={(e) => setSelectedQuantity(Number(e.target.value))}
+                className="input-field-tables"
               />
-              <button onClick={() => handleAddItemToTable(table.number)} className="btn">Adicionar Item</button>
-            </div>
-            <ul>
-              {table.items.map((item, idx) => (
-                <li key={idx}>{item.name} - {item.quantity} x R${item.totalPrice.toFixed(2)}</li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </div>
+              <button onClick={handleAddItemToTable} className="btn">Adicionar Item</button>
+              <button onClick={handleCloseTable} className="btn">Fechar Mesa</button>
+            </>
+          ) : (
+            <>
+              <h3>Atribuir Responsável à Mesa {selectedTable + 1}</h3>
+              <input
+                type="text"
+                placeholder="Nome do Responsável"
+                value={responsible}
+                onChange={(e) => setResponsible(e.target.value)}
+                className="input-field-tables"
+              />
+              <button onClick={handleAssignTable} className="btn">Atribuir</button>
+            </>
+          )}
+          <button onClick={() => setSelectedTable(null)} className="btn">Cancelar</button>
+        </div>
+      )}
     </div>
   );
 }
