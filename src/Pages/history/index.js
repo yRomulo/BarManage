@@ -7,8 +7,18 @@ function History() {
 
   useEffect(() => {
     const storedHistory = JSON.parse(localStorage.getItem('history')) || [];
-    setHistory(storedHistory);
+    // Ordenar por timestamp (mais recente primeiro)
+    const sortedHistory = storedHistory.sort((a, b) => b.timestamp - a.timestamp);
+    setHistory(sortedHistory);
   }, []);
+
+  const clearHistory = () => {
+    if (window.confirm("Tem certeza que deseja limpar o histórico?")) {
+      localStorage.removeItem('history');
+      setHistory([]);
+      alert("Histórico limpo com sucesso!");
+    }
+  };
 
   return (
     <div className="history-container">
@@ -16,6 +26,9 @@ function History() {
         <Link to="/Tables" className="btn">Voltar</Link>
       </div>
       <h2>Histórico de Mesas Fechadas</h2>
+      <button onClick={clearHistory} className="btn btn-clear">
+        Limpar Histórico
+      </button>
       {history.length === 0 ? (
         <p>Nenhuma mesa foi fechada ainda.</p>
       ) : (
