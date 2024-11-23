@@ -6,6 +6,7 @@ import Login from './Pages/Login';
 import Dashboard from './Pages/Dashboard';
 import Stock from './Pages/Stock';
 import Tables from './Pages/Tables';
+import History from './Pages/history';
 import './index.css';
 
 // Criando o root com a nova API
@@ -19,6 +20,7 @@ root.render(
       <Route path="/stock" element={<Stock />} />
       <Route path="/tables" element={<Tables />} />
       <Route path="/" element={<App />} />
+      <Route path="/history" element={<History />} />
     </Routes>
   </Router>
 );

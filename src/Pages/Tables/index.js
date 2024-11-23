@@ -76,7 +76,21 @@ function Tables() {
       (sum, item) => sum + item.price * item.quantity,
       0
     );
-
+  
+    // Criar o registro para o histórico
+    const closedTableEntry = {
+      tableNumber: selectedTable + 1,
+      responsible: table.responsible,
+      items: table.items,
+      total,
+      timestamp: Date.now(),
+    };
+  
+    // Salvar no histórico
+    const storedHistory = JSON.parse(localStorage.getItem('history')) || [];
+    const updatedHistory = [...storedHistory, closedTableEntry];
+    localStorage.setItem('history', JSON.stringify(updatedHistory));
+  
     alert(
       `Mesa ${selectedTable + 1} fechada! \nItens Consumidos:\n` +
         table.items
@@ -89,12 +103,14 @@ function Tables() {
           .join('\n') +
         `\nTotal: R$${total.toFixed(2)}`
     );
-
+  
+    // Remover a mesa fechada
     updatedTables[selectedTable] = null;
     setTables(updatedTables);
     localStorage.setItem('tables', JSON.stringify(updatedTables));
     setSelectedTable(null);
   };
+  
 
   const handleAddTable = () => {
     const updatedTables = [...tables, null];
@@ -116,6 +132,7 @@ function Tables() {
     <div className="tables-container">
       <div className="back">
         <Link to="/Dashboard" className="btn">Voltar</Link>
+        <Link to="/History" className="btn">Ver Histórico</Link>
       </div>
       <h2>Gerenciamento de Mesas</h2>
       <div className="tables-grid">
