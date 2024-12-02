@@ -12,7 +12,7 @@ function Dashboard() {
 
   return (
     <div className="dashboard-container">
-      <button onClick={handleLogout} className="btn logout-btn">Logout</button>
+      <Link to="/" onClick={handleLogout} className="btn logout-btn">Logout</Link>
       <h2>Painel de Controle</h2>
       <div className="dashboard-links">
         <Link to="/stock" className="btn">Estoque</Link>

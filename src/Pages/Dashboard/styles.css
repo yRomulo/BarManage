@@ -7,6 +7,5 @@
 }
 
 .logout-btn{
-  display: flex;
-  size: 20px;
+  display: table;
 }
