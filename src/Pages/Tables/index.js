@@ -142,8 +142,7 @@ function Tables() {
             className={`table-icon ${table ? 'occupied' : 'available'}`}
             onClick={() => handleTableClick(index)}
           >
-            Comanda {index + 1} <br />
-            {table?.responsible &&  <span> Responsável: {table.responsible}</span>}
+            Comanda {index + 1}: {table?.responsible &&  <span> {table.responsible}</span>}
           </div>
         ))}
       </div>

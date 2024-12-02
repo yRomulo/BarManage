@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import * as XLSX from 'xlsx';
 import './styles.css';
 
 function History() {
@@ -20,15 +21,40 @@ function History() {
     }
   };
 
+  const exportToExcel = () => {
+    if (history.length === 0) {
+      alert("Não há histórico para exportar.");
+      return;
+    }
+
+    // Transformar os dados do histórico em um array de objetos
+    const dataToExport = history.map(entry => ({
+      Responsável: entry.responsible,
+      Mesa: entry.tableNumber,
+      Total: entry.total.toFixed(2),
+      FechadaEm: new Date(entry.timestamp).toLocaleString(),
+      Itens: entry.items.map(item => `${item.name} (${item.quantity}x)`).join(', '),
+    }));
+
+    // Criar uma nova planilha
+    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Histórico');
+
+    // Exportar o arquivo
+    XLSX.writeFile(workbook, 'historico_comandas.xlsx');
+  };
+
   return (
     <div className="history-container">
       <div className="back">
         <Link to="/Tables" className="btn">Voltar</Link>
       </div>
       <h2>Histórico de Comandas Fechadas</h2>
-      <button onClick={clearHistory} className="btn btn-clear">
-        Limpar Histórico
-      </button>
+      <div className="button-container">
+        <button onClick={clearHistory} className="btn btn-clear">Limpar Histórico</button>
+        <button onClick={exportToExcel} className="btn btn-export">Exportar para Excel</button>
+      </div>
       {history.length === 0 ? (
         <p>Nenhuma comanda foi fechada ainda.</p>
       ) : (

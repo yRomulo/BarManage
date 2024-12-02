@@ -1,8 +1,12 @@
 .dashboard-container {
-    text-align: center;
-  }
-  
-  .dashboard-links {
-    margin-top: 20px;
-  }
-  
+  text-align: center;
+}
+
+.dashboard-links {
+  margin-top: 20px;
+}
+
+.logout-btn{
+  display: flex;
+  size: 20px;
+}
