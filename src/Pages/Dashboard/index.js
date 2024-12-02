@@ -8,7 +8,7 @@ function Dashboard() {
       <h2>Painel de Controle</h2>
       <div className="dashboard-links">
         <Link to="/stock" className="btn">Estoque</Link>
-        <Link to="/tables" className="btn">Gerenciar Mesas</Link>
+        <Link to="/tables" className="btn">Gerenciar comandas</Link>
       </div>
     </div>
   );

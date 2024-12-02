@@ -120,7 +120,7 @@ function Tables() {
 
   const handleRemoveTable = (index) => {
     if (tables[index]) {
-      alert('A mesa precisa estar vazia para ser removida!');
+      alert('A comanda precisa estar vazia para ser removida!');
       return;
     }
     const updatedTables = tables.filter((_, idx) => idx !== index);
@@ -134,7 +134,7 @@ function Tables() {
         <Link to="/Dashboard" className="btn">Voltar</Link>
         <Link to="/History" className="btn">Ver Histórico</Link>
       </div>
-      <h2>Gerenciamento de Mesas</h2>
+      <h2>Gerenciamento de Comandas</h2>
       <div className="tables-grid">
         {tables.map((table, index) => (
           <div
@@ -142,18 +142,18 @@ function Tables() {
             className={`table-icon ${table ? 'occupied' : 'available'}`}
             onClick={() => handleTableClick(index)}
           >
-            Mesa {index + 1} <br />
+            Comanda {index + 1} <br />
             {table?.responsible &&  <span> Responsável: {table.responsible}</span>}
           </div>
         ))}
       </div>
-      <button onClick={handleAddTable} className="btn">Adicionar Mesa</button>
+      <button onClick={handleAddTable} className="btn">Adicionar Comanda</button>
       {tables.length > 0 && (
         <button
           onClick={() => handleRemoveTable(tables.length - 1)}
           className="btn"
         >
-          Remover Última Mesa
+          Remover Última Comanda
         </button>
       )}
 
@@ -161,7 +161,7 @@ function Tables() {
         <div className="form-container">
           {tables[selectedTable] ? (
             <>
-              <h3>Itens na Mesa {selectedTable + 1}</h3>
+              <h3>Itens na Comanda {selectedTable + 1}</h3>
               <ul>
                 {tables[selectedTable].items.map((item, idx) => (
                   <li key={idx}>
@@ -169,7 +169,7 @@ function Tables() {
                   </li>
                 ))}
               </ul>
-              <h3>Adicionar Item à Mesa</h3>
+              <h3>Adicionar Item à Comanda</h3>
               <select
                 value={selectedItem}
                 onChange={(e) => setSelectedItem(e.target.value)}
@@ -190,11 +190,11 @@ function Tables() {
                 className="input-field-tables"
               />
               <button onClick={handleAddItemToTable} className="btn">Adicionar Item</button>
-              <button onClick={handleCloseTable} className="btn">Fechar Mesa</button>
+              <button onClick={handleCloseTable} className="btn">Fechar Comanda</button>
             </>
           ) : (
             <>
-              <h3>Atribuir Responsável à Mesa {selectedTable + 1}</h3>
+              <h3>Atribuir Responsável à Comanda {selectedTable + 1}</h3>
               <input
                 type="text"
                 placeholder="Nome do Responsável"

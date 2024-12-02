@@ -25,18 +25,18 @@ function History() {
       <div className="back">
         <Link to="/Tables" className="btn">Voltar</Link>
       </div>
-      <h2>Histórico de Mesas Fechadas</h2>
+      <h2>Histórico de Comandas Fechadas</h2>
       <button onClick={clearHistory} className="btn btn-clear">
         Limpar Histórico
       </button>
       {history.length === 0 ? (
-        <p>Nenhuma mesa foi fechada ainda.</p>
+        <p>Nenhuma comanda foi fechada ainda.</p>
       ) : (
         <ul>
           {history.map((entry, index) => (
             <li key={index}>
               <h3>Responsável: {entry.responsible}</h3>
-              <p>Mesa {entry.tableNumber}</p>
+              <p>Comanda {entry.tableNumber}</p>
               <ul>
                 {entry.items.map((item, idx) => (
                   <li key={idx}>
