@@ -7,6 +7,7 @@ function Tables() {
   const [stock, setStock] = useState([]);
   const [selectedTable, setSelectedTable] = useState(null);
   const [responsible, setResponsible] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedItem, setSelectedItem] = useState('');
   const [selectedQuantity, setSelectedQuantity] = useState('');
 
@@ -67,6 +68,7 @@ function Tables() {
     localStorage.setItem('tables', JSON.stringify(updatedTables));
     setSelectedItem('');
     setSelectedQuantity('');
+    setSelectedCategory('');
   };
 
   const handleCloseTable = () => {
@@ -76,8 +78,7 @@ function Tables() {
       (sum, item) => sum + item.price * item.quantity,
       0
     );
-  
-    // Criar o registro para o histórico
+
     const closedTableEntry = {
       tableNumber: selectedTable + 1,
       responsible: table.responsible,
@@ -85,12 +86,11 @@ function Tables() {
       total,
       timestamp: Date.now(),
     };
-  
-    // Salvar no histórico
+
     const storedHistory = JSON.parse(localStorage.getItem('history')) || [];
     const updatedHistory = [...storedHistory, closedTableEntry];
     localStorage.setItem('history', JSON.stringify(updatedHistory));
-  
+
     alert(
       `Mesa ${selectedTable + 1} fechada! \nItens Consumidos:\n` +
         table.items
@@ -103,14 +103,12 @@ function Tables() {
           .join('\n') +
         `\nTotal: R$${total.toFixed(2)}`
     );
-  
-    // Remover a mesa fechada
+
     updatedTables[selectedTable] = null;
     setTables(updatedTables);
     localStorage.setItem('tables', JSON.stringify(updatedTables));
     setSelectedTable(null);
   };
-  
 
   const handleAddTable = () => {
     const updatedTables = [...tables, null];
@@ -128,6 +126,9 @@ function Tables() {
     localStorage.setItem('tables', JSON.stringify(updatedTables));
   };
 
+  // Obter categorias únicas do estoque
+  const categories = [...new Set(stock.map((item) => item.category))];
+
   return (
     <div className="tables-container">
       <div className="back">
@@ -142,7 +143,7 @@ function Tables() {
             className={`table-icon ${table ? 'occupied' : 'available'}`}
             onClick={() => handleTableClick(index)}
           >
-            Comanda {index + 1}: {table?.responsible &&  <span> {table.responsible}</span>}
+            Comanda {index + 1}: {table?.responsible && <span>{table.responsible}</span>}
           </div>
         ))}
       </div>
@@ -170,17 +171,33 @@ function Tables() {
               </ul>
               <h3>Adicionar Item à Comanda</h3>
               <select
-                value={selectedItem}
-                onChange={(e) => setSelectedItem(e.target.value)}
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
                 className="input-field-tables"
               >
-                <option value="">Selecione um item</option>
-                {stock.map((item, idx) => (
-                  <option key={idx} value={item.name}>
-                    {item.name} R${item.price} (Estoque: {item.quantity}) 
+                <option value="">Selecione uma Categoria</option>
+                {categories.map((category, idx) => (
+                  <option key={idx} value={category}>
+                    {category}
                   </option>
                 ))}
               </select>
+              {selectedCategory && (
+                <select
+                  value={selectedItem}
+                  onChange={(e) => setSelectedItem(e.target.value)}
+                  className="input-field-tables"
+                >
+                  <option value="">Selecione um Item</option>
+                  {stock
+                    .filter((item) => item.category === selectedCategory)
+                    .map((item, idx) => (
+                      <option key={idx} value={item.name}>
+                        {item.name} R${item.price} (Estoque: {item.quantity})
+                      </option>
+                    ))}
+                </select>
+              )}
               <input
                 type="number"
                 placeholder="Quantidade"
