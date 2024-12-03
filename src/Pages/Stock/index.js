@@ -10,6 +10,7 @@ function Stock() {
   const [editingIndex, setEditingIndex] = useState(null); // Índice do item em edição
   const [itemCategory, setItemCategory] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [searchCategory, setSearchCategory] = useState(""); // Novo estado para busca por categoria
   const [sorting, setSorting] = useState({ field: "", ascending: true });
 
   useEffect(() => {
@@ -24,7 +25,6 @@ function Stock() {
         category: itemCategory,
         quantity: parseInt(itemQuantity, 10),
         price: parseFloat(itemPrice),
-
       };
       const updatedStock = [...stock, newItem];
       setStock(updatedStock);
@@ -32,6 +32,7 @@ function Stock() {
       setItemName("");
       setItemQuantity("");
       setItemPrice("");
+      setItemCategory("");
     } else {
       alert("Preencha todos os campos!");
     }
@@ -81,8 +82,11 @@ function Stock() {
     setStock(sortedStock);
   };
 
-  const filteredStock = stock.filter((item) =>
-    item.name.toLowerCase().includes(searchTerm.toLowerCase())
+  // Filtragem dos itens com base no nome e na categoria
+  const filteredStock = stock.filter(
+    (item) =>
+      item.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      item.category.toLowerCase().includes(searchCategory.toLowerCase())
   );
 
   return (
@@ -122,7 +126,6 @@ function Stock() {
           onChange={(e) => setItemPrice(e.target.value)}
           className="input-field"
         />
-
         <button onClick={handleAddItem} className="btn">
           Adicionar Item
         </button>
@@ -133,6 +136,13 @@ function Stock() {
           placeholder="Pesquisar por nome..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
+          className="input-field"
+        />
+        <input
+          type="text"
+          placeholder="Pesquisar por categoria..."
+          value={searchCategory}
+          onChange={(e) => setSearchCategory(e.target.value)}
           className="input-field"
         />
       </div>
@@ -151,7 +161,6 @@ function Stock() {
             <tr key={index}>
               {editingIndex === index ? (
                 <>
-                  {/* Campos de edição */}
                   <td>
                     <input
                       type="text"
@@ -201,7 +210,6 @@ function Stock() {
                 </>
               ) : (
                 <>
-                  {/* Campos normais */}
                   <td>{item.name}</td>
                   <td>{item.category}</td>
                   <td>{item.quantity}</td>
