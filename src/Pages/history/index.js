@@ -40,9 +40,9 @@ function History() {
     const worksheet = XLSX.utils.json_to_sheet(dataToExport);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Histórico');
-
+    const Data = new Date (Date.now());
     // Exportar o arquivo
-    XLSX.writeFile(workbook, 'historico_comandas.xlsx');
+    XLSX.writeFile(workbook, 'historico_'+Data.toLocaleString('pt-BR', { timezone: 'UTC' })+'.xlsx');
   };
 
   return (
