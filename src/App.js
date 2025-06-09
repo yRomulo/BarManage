@@ -7,6 +7,7 @@ function App() {
       <h1>Bem-vindo ao Sistema de Gerenciamento de Bar</h1>
       <div className="links">
         <Link to="/login" className="btn">Login</Link>
+        
       </div>
     </div>
   );
