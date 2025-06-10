@@ -236,7 +236,7 @@ function Stock() {
                   <td>R${item.price}</td>
                   <td>
                     <button
-                      onClick={() => handleEditItem(item.id)}
+                      onClick={() => handleEditItem(item)}
                       className="btn"
                     >
                       Editar
