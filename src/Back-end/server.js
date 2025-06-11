@@ -11,6 +11,11 @@ app.use(bodyParser.json());
 const stockRouter = require('./routes/stock');
 app.use('/api/stock', stockRouter);
 
+const tablesRouter = require('./routes/tables');
+app.use('/api/tables', tablesRouter);
+
+
+
 // Inicia o servidor
 const PORT = 3001;
 app.listen(PORT, () => {
